@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+python-multipart
+sqlalchemy
+alembic
+passlib[argon2]
+python-jose[cryptography]
+pydantic[email]
+chromadb
+sentence-transformers
+PyPDF2
+python-docx
+requests
+python-dotenv
+google-generativeai
