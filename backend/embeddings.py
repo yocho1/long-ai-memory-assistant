@@ -19,6 +19,7 @@ from config import settings
 
 class EmbeddingService:
     def __init__(self):
+        logger.info("Initializing EmbeddingService...")
         self.use_gemini_embeddings = bool(settings.GEMINI_KEY and GENAI_AVAILABLE)
         
         # Initialize Gemini if available

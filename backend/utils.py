@@ -46,24 +46,44 @@ def extract_text_from_file(filename: str, file_bytes: bytes) -> str:
         logger.error(f"File extraction error for {filename}: {e}")
         return ""
 
-def chunk_text(text: str, chunk_size: int = 800, overlap: int = 150) -> List[str]:
+def chunk_text(text: str, chunk_size: int = 500, overlap: int = 100) -> List[str]:
+    """
+    Split text into chunks with overlap, with safety limits to prevent memory errors
+    """
     text = text.replace("\r\n", "\n").strip()
     if not text:
         return []
-        
+    
+    # Safety checks
+    if overlap >= chunk_size:
+        overlap = chunk_size // 4  # Ensure overlap is smaller than chunk_size
+    
     chunks = []
     start = 0
-    L = len(text)
-    while start < L:
-        end = min(L, start + chunk_size)
+    text_length = len(text)
+    max_chunks = 1000  # Safety limit to prevent infinite loops
+    
+    # If text is smaller than chunk_size, return as single chunk
+    if text_length <= chunk_size:
+        return [text] if text.strip() else []
+    
+    # Create chunks with safety limit
+    while start < text_length and len(chunks) < max_chunks:
+        end = start + chunk_size
         chunk = text[start:end].strip()
+        
+        # Only add non-empty chunks
         if chunk:
             chunks.append(chunk)
+        
+        # Move to next position with overlap
         start = end - overlap
-        if start < 0:
-            start = 0
-        if start >= L:
+        
+        # Safety check: if we're not making progress, break
+        if start <= 0:
             break
+    
+    logger.info(f"Created {len(chunks)} chunks from text of length {text_length}")
     return chunks
 
 def generate_uuid_list(count: int) -> List[str]:
